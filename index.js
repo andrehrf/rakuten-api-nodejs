@@ -48,7 +48,11 @@ module.exports = function(user, pass, sid, authorization){
                 return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
             }).join('&');
 
-            return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            if (paramsStr) {
+                return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            } else {
+                return URLbase;
+            }
         },
         
         /**
