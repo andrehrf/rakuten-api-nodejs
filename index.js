@@ -77,7 +77,7 @@ module.exports = function(user, pass, sid, authorization){
                 });
             }
             else{
-                return this.token;
+                cb(this.token);
             }
         },
         
