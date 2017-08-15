@@ -48,7 +48,11 @@ module.exports = function(user, pass, sid, authorization){
                 return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
             }).join('&');
 
-            return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            if (paramsStr) {
+                return URLbase + ((URLbase.indexOf("?") >= 0) ? "" : "?") + paramsStr;
+            } else {
+                return URLbase;
+            }
         },
         
         /**
@@ -73,7 +77,7 @@ module.exports = function(user, pass, sid, authorization){
                 });
             }
             else{
-                return this.token;
+                cb(this.token);
             }
         },
         
@@ -105,7 +109,39 @@ module.exports = function(user, pass, sid, authorization){
                 _this.getinapi(URL, token, cb);
             });
         },
-        
+
+        /**
+         * Get products, including their tracking links
+         * @see https://developers.rakutenmarketing.com/subscribe/apis/info?name=LinkLocator&version=1.0&provider=LinkShare#!/linklocator/getTextLinks_get_7
+         * @param object params
+         * mid: Advertiser ID
+         * creativeCategory: Creative Category ID provided by getCreativeCategories operation
+         * startDate: Start Date for Creative (Format: MMDDYYYY)
+         * endDate: End Date for Creative (Format: MMDDYYYY)
+         * page: Page number of the results (Specify '1' for first 10,000 links)
+         * @param function cb
+         */
+        getTextLinks: function(params, cb) {
+            var _this = this;
+            var defaultParams = {
+                mid: '',
+                creativeCategory: '',
+                startDate: '',
+                endDate: '',
+                page: '1'
+            };
+
+            params = Object.assign({}, defaultParams, params);
+
+            var paramString = [ params.mid, params.creativeCategory, params.startDate, params.endDate, '-1', params.page ];
+            paramString = paramString.join('/');
+
+            this.createtoken(function(token){
+                let URL = _this.createurl("https://api.rakutenmarketing.com/linklocator/1.0/getTextLinks/" + paramString, {});
+                _this.getinapi(URL, token, cb);
+            });
+        },
+
         /**
          * Get products, including their tracking links
          * 
